@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Utilisateur {
+  id String @id @default(cuid())
+
+  email         String    @unique
+  emailVerified DateTime?
+
+  motDePasseHash String
+
+  prenom String
+  nom    String
+
+  dateNaissance DateTime?
+
+  actif Boolean @default(true)
+
+  motDePasseModifieLe DateTime?
+  derniereConnexion   DateTime?
+
+  tentativesConnexion    Int       @default(0)
+  compteVerrouilleJusquA DateTime?
+
+  roles   UtilisateurRole[]
+  groupes UtilisateurGroupe[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("utilisateurs")
+}
+
+model Role {
+  id String @id @default(cuid())
+
+  nom         String  @unique
+  description String?
+
+  systeme Boolean @default(false)
+
+  utilisateurs UtilisateurRole[]
+  permissions  RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("roles")
+}
+
+model UtilisateurRole {
+  utilisateurId String
+  roleId        String
+
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id])
+  role        Role        @relation(fields: [roleId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@id([utilisateurId, roleId])
+  @@index([roleId])
+  @@map("utilisateur_roles")
+}
+
+model Permission {
+  id String @id @default(cuid())
+
+  code        String  @unique
+  libelle     String
+  description String?
+
+  roles RolePermission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id])
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model Salle {
+  id String @id @default(cuid())
+
+  nom        String @unique
+  adresse    String
+  codePostal String
+  ville      String
+
+  actif Boolean @default(true)
+
+  creneaux         Creneau[]
+  indisponibilites Indisponibilite[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("salles")
+}
+
+enum JourSemaine {
+  LUNDI
+  MARDI
+  MERCREDI
+  JEUDI
+  VENDREDI
+  SAMEDI
+  DIMANCHE
+}
+
+enum TypeCreneau {
+  ENTRAINEMENT
+  JEU_LIBRE
+}
+
+model Creneau {
+  id String @id @default(cuid())
+
+  salleId String
+  salle   Salle  @relation(fields: [salleId], references: [id])
+
+  jourSemaine JourSemaine
+
+  heureDebut String
+  heureFin   String
+
+  type TypeCreneau?
+
+  actif Boolean @default(true)
+
+  groupes GroupeCreneau[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("creneaux")
+}
+
+model Groupe {
+  id String @id @default(cuid())
+
+  nom         String  @unique
+  description String?
+
+  actif Boolean @default(true)
+
+  couleur String? // #3B82F6
+
+  ageMin Int?
+  ageMax Int?
+
+  utilisateurs UtilisateurGroupe[]
+  creneaux     GroupeCreneau[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("groupes")
+}
+
+model UtilisateurGroupe {
+  utilisateurId String
+  groupeId      String
+
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id])
+  groupe      Groupe      @relation(fields: [groupeId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@id([utilisateurId, groupeId])
+  @@index([groupeId])
+  @@map("utilisateur_groupes")
+}
+
+model GroupeCreneau {
+  groupeId  String
+  creneauId String
+
+  groupe  Groupe  @relation(fields: [groupeId], references: [id])
+  creneau Creneau @relation(fields: [creneauId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@id([groupeId, creneauId])
+  @@index([creneauId])
+  @@map("groupe_creneaux")
+}
+
+model Indisponibilite {
+  id String @id @default(cuid())
+
+  salleId String
+  salle   Salle  @relation(fields: [salleId], references: [id])
+
+  debut DateTime
+  fin   DateTime
+
+  motif String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([salleId])
+  @@index([debut])
+  @@index([fin])
+  @@map("indisponibilites")
+}
+
+model Page {
+  id String @id @default(cuid())
+
+  titre String
+
+  chemin String @unique
+
+  seoTitre       String?
+  seoDescription String?
+
+  contenu Json?
+
+  publiee Boolean @default(false)
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  menuItems MenuItem[]
+
+  @@map("pages")
+}
+
+model Menu {
+  id String @id @default(cuid())
+
+  code String @unique
+  nom  String
+
+  items MenuItem[]
+
+  actif Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("menus")
+}
+
+enum TypeMenuItem {
+  PAGE
+  URL
+  GROUPE
+}
+
+model MenuItem {
+  id String @id @default(cuid())
+
+  menuId String
+  menu   Menu   @relation(fields: [menuId], references: [id])
+
+  parentId String?
+
+  parent  MenuItem?  @relation("MenuItemParent", fields: [parentId], references: [id])
+  enfants MenuItem[] @relation("MenuItemParent")
+
+  label String
+
+  pageId String?
+
+  type TypeMenuItem
+
+  page Page? @relation(fields: [pageId], references: [id])
+
+  url String?
+
+  ordre Int @default(0)
+
+  nouvelOnglet Boolean @default(false)
+
+  actif Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([menuId])
+  @@index([parentId])
+  @@map("menu_items")
+}
