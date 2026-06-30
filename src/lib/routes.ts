@@ -103,4 +103,13 @@ export const Routes = {
   modifierPage(id: string) {
     return `/gestion/pages/${id}/modifier`;
   },
+
+  GESTION_MENU_ITEMS: "/gestion/menu-items",
+  GESTION_MENU_ITEMS_NOUVEAU: "/gestion/menu-items/nouvelle",
+  menuItem(id: string) {
+    return `/gestion/menu-items/${id}`;
+  },
+  modifierMenuItem(id: string) {
+    return `/gestion/menu-items/${id}/modifier`;
+  },
 };

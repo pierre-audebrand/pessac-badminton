@@ -23,6 +23,12 @@ export const Permissions = {
     description: "Créer et modifier les pages du site",
   },
 
+  MENUS_GERER: {
+    code: "menus:gerer",
+    libelle: "Gestion des menus",
+    description: "Créer et modifier les menus du site",
+  },
+
   ACTUALITES_GERER: {
     code: "actualites:gerer",
     libelle: "Gestion des actualités",

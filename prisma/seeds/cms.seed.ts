@@ -1,32 +1,8 @@
+import { slugify } from "@/lib/cms";
 import { prisma } from "@/lib/prisma";
+import { Menu } from "@prisma/client";
 
 export async function seedCms() {
-  console.log("Création des menus...");
-
-  const menuPrincipal = await prisma.menu.upsert({
-    where: {
-      code: "principal",
-    },
-    update: {},
-    create: {
-      code: "principal",
-      nom: "Menu principal",
-    },
-  });
-
-  const menuFooter = await prisma.menu.upsert({
-    where: {
-      code: "footer",
-    },
-    update: {},
-    create: {
-      code: "footer",
-      nom: "Pied de page",
-    },
-  });
-
-  console.log("Menus créés");
-
   console.log("Création des pages...");
 
   const accueil = await creerPage("Accueil", "");
@@ -68,18 +44,12 @@ export async function seedCms() {
 
   console.log("Création des éléments de menus...");
 
-  await prisma.menuItem.deleteMany({
-    where: {
-      menuId: {
-        in: [menuPrincipal.id, menuFooter.id],
-      },
-    },
-  });
+  await prisma.menuItem.deleteMany();
 
   await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Accueil",
+      menu: Menu.PRINCIPAL,
+      libelle: "Accueil",
       type: "PAGE",
       pageId: accueil.id,
       ordre: 1,
@@ -88,8 +58,8 @@ export async function seedCms() {
 
   const club = await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Le Club",
+      menu: Menu.PRINCIPAL,
+      libelle: "Le Club",
       type: "GROUPE",
       ordre: 2,
     },
@@ -98,33 +68,33 @@ export async function seedCms() {
   await prisma.menuItem.createMany({
     data: [
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: club.id,
-        label: "Présentation",
+        libelle: "Présentation",
         type: "PAGE",
         pageId: presentation.id,
         ordre: 1,
       },
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: club.id,
-        label: "Le bureau",
+        libelle: "Le bureau",
         type: "PAGE",
         pageId: bureau.id,
         ordre: 2,
       },
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: club.id,
-        label: "Les salles",
+        libelle: "Les salles",
         type: "PAGE",
         pageId: salles.id,
         ordre: 3,
       },
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: club.id,
-        label: "Nos partenaires",
+        libelle: "Nos partenaires",
         type: "PAGE",
         pageId: partenaires.id,
         ordre: 4,
@@ -134,8 +104,8 @@ export async function seedCms() {
 
   await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Créneaux",
+      menu: Menu.PRINCIPAL,
+      libelle: "Créneaux",
       type: "PAGE",
       pageId: creneaux.id,
       ordre: 3,
@@ -144,8 +114,8 @@ export async function seedCms() {
 
   const adhesion = await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Adhésion",
+      menu: Menu.PRINCIPAL,
+      libelle: "Adhésion",
       type: "GROUPE",
       ordre: 4,
     },
@@ -154,25 +124,25 @@ export async function seedCms() {
   await prisma.menuItem.createMany({
     data: [
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: adhesion.id,
-        label: "Tarifs",
+        libelle: "Tarifs",
         type: "PAGE",
         pageId: tarifs.id,
         ordre: 1,
       },
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: adhesion.id,
-        label: "Documents d'inscription",
+        libelle: "Documents d'inscription",
         type: "PAGE",
         pageId: documents.id,
         ordre: 2,
       },
       {
-        menuId: menuPrincipal.id,
+        menu: Menu.PRINCIPAL,
         parentId: adhesion.id,
-        label: "Règlement intérieur",
+        libelle: "Règlement intérieur",
         type: "PAGE",
         pageId: reglement.id,
         ordre: 3,
@@ -182,8 +152,8 @@ export async function seedCms() {
 
   await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Actualités",
+      menu: Menu.PRINCIPAL,
+      libelle: "Actualités",
       type: "PAGE",
       pageId: actualites.id,
       ordre: 5,
@@ -192,8 +162,8 @@ export async function seedCms() {
 
   await prisma.menuItem.create({
     data: {
-      menuId: menuPrincipal.id,
-      label: "Contact",
+      menu: Menu.PRINCIPAL,
+      libelle: "Contact",
       type: "PAGE",
       pageId: contact.id,
       ordre: 6,
@@ -203,22 +173,22 @@ export async function seedCms() {
   await prisma.menuItem.createMany({
     data: [
       {
-        menuId: menuFooter.id,
-        label: "Mentions légales",
+        menu: Menu.FOOTER,
+        libelle: "Mentions légales",
         type: "PAGE",
         pageId: mentions.id,
         ordre: 1,
       },
       {
-        menuId: menuFooter.id,
-        label: "Politique de confidentialité",
+        menu: Menu.FOOTER,
+        libelle: "Politique de confidentialité",
         type: "PAGE",
         pageId: confidentialite.id,
         ordre: 2,
       },
       {
-        menuId: menuFooter.id,
-        label: "Contact",
+        menu: Menu.FOOTER,
+        libelle: "Contact",
         type: "PAGE",
         pageId: contact.id,
         ordre: 3,
@@ -229,17 +199,17 @@ export async function seedCms() {
   console.log("Éléments de menus créés");
 }
 
-async function creerPage(titre: string, chemin: string) {
+async function creerPage(titre: string, slug: string) {
   return prisma.page.upsert({
     where: {
-      chemin,
+      slug,
     },
     update: {
       titre,
     },
     create: {
       titre,
-      chemin,
+      slug: slug === "" ? "" : slugify(slug),
       publiee: true,
     },
   });

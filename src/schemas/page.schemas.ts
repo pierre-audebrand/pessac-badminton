@@ -4,11 +4,12 @@ import { nullableStringSchema } from "./common.schemas";
 export const creerPageSchema = z.object({
   titre: z.string().trim().min(1).max(100),
 
-  chemin: z
+  slug: z
     .string()
     .trim()
-    .toLowerCase()
-    .regex(/^[a-z0-9/-]*$/, "Le chemin est invalide"),
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Le slug est invalide."),
 
   seoTitre: nullableStringSchema(60),
 

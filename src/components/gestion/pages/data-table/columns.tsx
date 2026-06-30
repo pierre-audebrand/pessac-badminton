@@ -31,13 +31,11 @@ export function getPageColumns(
     },
 
     {
-      accessorKey: "chemin",
+      accessorKey: "slug",
 
       header: "Chemin",
 
-      cell: ({ row }) => (
-        <code className="text-sm">/{row.original.chemin}</code>
-      ),
+      cell: ({ row }) => <code className="text-sm">/{row.original.slug}</code>,
     },
 
     {

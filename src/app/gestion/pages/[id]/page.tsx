@@ -45,7 +45,7 @@ export default async function PagePage({ params }: Props) {
             )}
           </div>
 
-          <p className="text-muted-foreground">/{page.chemin}</p>
+          <p className="text-muted-foreground">/{page.slug}</p>
         </div>
 
         <Button asChild>
@@ -67,7 +67,7 @@ export default async function PagePage({ params }: Props) {
           <div>
             <p className="text-sm text-muted-foreground">Chemin</p>
 
-            <p>/{page.chemin}</p>
+            <p>/{page.slug}</p>
           </div>
 
           <div>

@@ -23,9 +23,10 @@ import {
   construireErreurException,
   FormState,
 } from "@/lib/formulaire";
+import { slugify } from "@/lib/cms";
 
 export type PageFormState = FormState<
-  "titre" | "chemin" | "seoTitre" | "seoDescription" | "publiee"
+  "titre" | "slug" | "seoTitre" | "seoDescription" | "publiee"
 >;
 
 export async function creerPageAction(
@@ -36,7 +37,7 @@ export async function creerPageAction(
 
   const resultatValidation = creerPageSchema.safeParse({
     titre: formData.get("titre"),
-    chemin: formData.get("chemin"),
+    slug: slugify(formData.get("slug") as string),
     seoTitre: formData.get("seoTitre"),
     seoDescription: formData.get("seoDescription"),
     publiee: formData.get("publiee") === "on",
@@ -53,7 +54,7 @@ export async function creerPageAction(
   } catch (error) {
     if (error instanceof PageDejaExistanteError) {
       return {
-        erreurs: construireErreur("chemin", error.message),
+        erreurs: construireErreur("slug", error.message),
       };
     }
 
@@ -74,7 +75,7 @@ export async function modifierPageAction(
 
   const resultatValidation = modifierPageSchema.safeParse({
     titre: formData.get("titre"),
-    chemin: formData.get("chemin"),
+    slug: slugify(formData.get("slug") as string),
     seoTitre: formData.get("seoTitre"),
     seoDescription: formData.get("seoDescription"),
     publiee: formData.get("publiee") === "on",
@@ -91,7 +92,7 @@ export async function modifierPageAction(
   } catch (error) {
     if (error instanceof PageDejaExistanteError) {
       return {
-        erreurs: construireErreur("chemin", error.message),
+        erreurs: construireErreur("slug", error.message),
       };
     }
 

@@ -7,7 +7,7 @@ import { Page, Prisma } from "@prisma/client";
 
 export const pageSortableFields = [
   "titre",
-  "chemin",
+  "slug",
   "publiee",
   "createdAt",
 ] as const;
@@ -49,7 +49,7 @@ export async function rechercherPages({
           },
         },
         {
-          chemin: {
+          slug: {
             contains: search,
             mode: "insensitive",
           },
@@ -121,10 +121,10 @@ export async function recupererPageParId(pageId: string) {
   return page;
 }
 
-export async function recupererPageParChemin(chemin: string) {
+export async function recupererPageParSlug(slug: string) {
   return prisma.page.findFirst({
     where: {
-      chemin,
+      slug,
       publiee: true,
     },
   });
@@ -132,14 +132,14 @@ export async function recupererPageParChemin(chemin: string) {
 
 export class PageDejaExistanteError extends Error {
   constructor() {
-    super("Une page utilise déjà ce chemin");
+    super("Une page utilise déjà ce slug");
   }
 }
 
 export async function creerPage(data: CreerPageData) {
   const pageExistante = await prisma.page.findUnique({
     where: {
-      chemin: data.chemin,
+      slug: data.slug,
     },
   });
 
@@ -150,7 +150,7 @@ export async function creerPage(data: CreerPageData) {
   return prisma.page.create({
     data: {
       titre: data.titre,
-      chemin: data.chemin,
+      slug: data.slug,
 
       seoTitre: data.seoTitre,
       seoDescription: data.seoDescription,
@@ -165,7 +165,7 @@ export async function modifierPage(pageId: string, data: ModifierPageData) {
 
   const pageExistante = await prisma.page.findFirst({
     where: {
-      chemin: data.chemin,
+      slug: data.slug,
 
       NOT: {
         id: pageId,
@@ -184,7 +184,7 @@ export async function modifierPage(pageId: string, data: ModifierPageData) {
 
     data: {
       titre: data.titre,
-      chemin: data.chemin,
+      slug: data.slug,
 
       seoTitre: data.seoTitre,
       seoDescription: data.seoDescription,

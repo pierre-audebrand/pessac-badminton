@@ -2,10 +2,12 @@
 
 import { supprimerIndisponibiliteAction } from "@/actions/indisponibilite.actions";
 
-import { EntityContainer } from "@/components/ui/entity-actions/container";
-import { EntityDeleteAction } from "@/components/ui/entity-actions/delete-action";
-import { EntityEditAction } from "@/components/ui/entity-actions/edit-action";
-import { EntityViewAction } from "@/components/ui/entity-actions/view-action";
+import {
+  EntityContainer,
+  EntityDeleteAction,
+  EntityEditAction,
+  EntityViewAction,
+} from "@/components/ui/entity-actions";
 
 import { Routes } from "@/lib/routes";
 

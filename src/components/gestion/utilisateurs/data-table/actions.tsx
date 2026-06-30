@@ -2,11 +2,13 @@
 
 import { modifierActivationUtilisateurAction } from "@/actions/utilisateur.actions";
 
-import { EntityContainer } from "@/components/ui/entity-actions/container";
-import { EntityCustomAction } from "@/components/ui/entity-actions/custom-action";
-import { EntityEditAction } from "@/components/ui/entity-actions/edit-action";
-import { EntityToggleAction } from "@/components/ui/entity-actions/toggle-action";
-import { EntityViewAction } from "@/components/ui/entity-actions/view-action";
+import {
+  EntityContainer,
+  EntityCustomAction,
+  EntityEditAction,
+  EntityToggleAction,
+  EntityViewAction,
+} from "@/components/ui/entity-actions";
 
 import { Routes } from "@/lib/routes";
 

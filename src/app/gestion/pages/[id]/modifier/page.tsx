@@ -41,7 +41,7 @@ export default async function ModifierPagePage({ params }: Props) {
         texteBouton="Enregistrer"
         page={{
           titre: page.titre,
-          chemin: page.chemin,
+          slug: page.slug,
           seoTitre: page.seoTitre,
           seoDescription: page.seoDescription,
           publiee: page.publiee,

@@ -5,15 +5,17 @@ import {
   supprimerPageAction,
 } from "@/actions/page.actions";
 
-import { EntityContainer } from "@/components/ui/entity-actions/container";
-import { EntityDeleteAction } from "@/components/ui/entity-actions/delete-action";
-import { EntityEditAction } from "@/components/ui/entity-actions/edit-action";
-import { EntityViewAction } from "@/components/ui/entity-actions/view-action";
+import {
+  EntityContainer,
+  EntityDeleteAction,
+  EntityEditAction,
+  EntityToggleAction,
+  EntityViewAction,
+} from "@/components/ui/entity-actions";
 
 import { Routes } from "@/lib/routes";
 
 import { PageRecherche } from "@/services/page.service";
-import { EntityToggleAction } from "@/components/ui/entity-actions/toggle-action";
 import { Globe, GlobeLock } from "lucide-react";
 
 interface Props {

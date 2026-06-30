@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 
 import type { PageFormState } from "@/actions/page.actions";
 
@@ -8,13 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { slugify } from "@/lib/cms";
+import { RefreshCw } from "lucide-react";
 
 type Props = {
   action: (state: PageFormState, formData: FormData) => Promise<PageFormState>;
 
   page?: {
     titre: string;
-    chemin: string;
+    slug: string;
     seoTitre: string | null;
     seoDescription: string | null;
     publiee: boolean;
@@ -28,6 +30,9 @@ const initialState: PageFormState = {};
 export function FormulairePage({ action, page, texteBouton }: Props) {
   const [state, formAction] = useActionState(action, initialState);
 
+  const titreRef = useRef<HTMLInputElement>(null);
+  const slugRef = useRef<HTMLInputElement>(null);
+
   return (
     <form action={formAction} className="max-w-2xl space-y-6" noValidate>
       <div className="space-y-2">
@@ -35,7 +40,13 @@ export function FormulairePage({ action, page, texteBouton }: Props) {
           Titre
         </Label>
 
-        <Input id="titre" name="titre" required defaultValue={page?.titre} />
+        <Input
+          ref={titreRef}
+          id="titre"
+          name="titre"
+          required
+          defaultValue={page?.titre}
+        />
 
         {state.erreurs?.titre?.map((erreur) => (
           <p key={erreur} className="text-sm text-destructive">
@@ -45,27 +56,33 @@ export function FormulairePage({ action, page, texteBouton }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="chemin" required>
+        <Label htmlFor="slug" required>
           Chemin
         </Label>
 
-        <Input
-          id="chemin"
-          name="chemin"
-          required
-          placeholder="club/presentation"
-          defaultValue={page?.chemin}
-        />
+        <div className="flex gap-2">
+          <Input
+            ref={slugRef}
+            id="slug"
+            name="slug"
+            required
+            defaultValue={page?.slug}
+          />
 
-        <p className="text-xs text-muted-foreground">
-          Exemple : <code>club/presentation</code>
-        </p>
-
-        {state.erreurs?.chemin?.map((erreur) => (
-          <p key={erreur} className="text-sm text-destructive">
-            {erreur}
-          </p>
-        ))}
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            title="Régénérer le slug"
+            onClick={() => {
+              if (titreRef.current && slugRef.current) {
+                slugRef.current.value = slugify(titreRef.current.value);
+              }
+            }}
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-2">

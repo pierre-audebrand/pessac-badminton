@@ -24,7 +24,7 @@ export function PageCard({ page }: Props) {
             )}
           </div>
 
-          <p className="text-sm text-muted-foreground">/{page.chemin}</p>
+          <p className="text-sm text-muted-foreground">/{page.slug}</p>
         </div>
 
         <div>

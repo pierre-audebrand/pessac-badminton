@@ -7,6 +7,9 @@ CREATE TYPE "TypeCreneau" AS ENUM ('ENTRAINEMENT', 'JEU_LIBRE');
 -- CreateEnum
 CREATE TYPE "TypeMenuItem" AS ENUM ('PAGE', 'URL', 'GROUPE');
 
+-- CreateEnum
+CREATE TYPE "Menu" AS ENUM ('PRINCIPAL', 'FOOTER');
+
 -- CreateTable
 CREATE TABLE "utilisateurs" (
     "id" TEXT NOT NULL,
@@ -148,7 +151,7 @@ CREATE TABLE "indisponibilites" (
 CREATE TABLE "pages" (
     "id" TEXT NOT NULL,
     "titre" TEXT NOT NULL,
-    "chemin" TEXT NOT NULL,
+    "slug" TEXT NOT NULL,
     "seoTitre" TEXT,
     "seoDescription" TEXT,
     "contenu" JSONB,
@@ -160,23 +163,11 @@ CREATE TABLE "pages" (
 );
 
 -- CreateTable
-CREATE TABLE "menus" (
-    "id" TEXT NOT NULL,
-    "code" TEXT NOT NULL,
-    "nom" TEXT NOT NULL,
-    "actif" BOOLEAN NOT NULL DEFAULT true,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "menus_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "menu_items" (
     "id" TEXT NOT NULL,
-    "menuId" TEXT NOT NULL,
+    "menu" "Menu" NOT NULL,
     "parentId" TEXT,
-    "label" TEXT NOT NULL,
+    "libelle" TEXT NOT NULL,
     "pageId" TEXT,
     "type" "TypeMenuItem" NOT NULL,
     "url" TEXT,
@@ -226,13 +217,10 @@ CREATE INDEX "indisponibilites_debut_idx" ON "indisponibilites"("debut");
 CREATE INDEX "indisponibilites_fin_idx" ON "indisponibilites"("fin");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "pages_chemin_key" ON "pages"("chemin");
+CREATE UNIQUE INDEX "pages_slug_key" ON "pages"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "menus_code_key" ON "menus"("code");
-
--- CreateIndex
-CREATE INDEX "menu_items_menuId_idx" ON "menu_items"("menuId");
+CREATE INDEX "menu_items_menu_idx" ON "menu_items"("menu");
 
 -- CreateIndex
 CREATE INDEX "menu_items_parentId_idx" ON "menu_items"("parentId");
@@ -266,9 +254,6 @@ ALTER TABLE "groupe_creneaux" ADD CONSTRAINT "groupe_creneaux_creneauId_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "indisponibilites" ADD CONSTRAINT "indisponibilites_salleId_fkey" FOREIGN KEY ("salleId") REFERENCES "salles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "menu_items" ADD CONSTRAINT "menu_items_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "menus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "menu_items" ADD CONSTRAINT "menu_items_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "menu_items"("id") ON DELETE SET NULL ON UPDATE CASCADE;

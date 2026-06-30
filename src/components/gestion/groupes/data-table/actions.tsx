@@ -4,10 +4,13 @@ import { Routes } from "@/lib/routes";
 
 import { GroupeRecherche } from "@/services/groupe.service";
 
-import { EntityContainer } from "@/components/ui/entity-actions/container";
-import { EntityToggleAction } from "@/components/ui/entity-actions/toggle-action";
-import { EntityViewAction } from "@/components/ui/entity-actions/view-action";
-import { EntityEditAction } from "@/components/ui/entity-actions/edit-action";
+import {
+  EntityContainer,
+  EntityEditAction,
+  EntityToggleAction,
+  EntityViewAction,
+} from "@/components/ui/entity-actions";
+
 import { modifierActivationGroupeAction } from "@/actions/groupe.actions";
 
 interface Props {
