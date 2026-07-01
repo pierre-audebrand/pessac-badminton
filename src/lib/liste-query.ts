@@ -10,6 +10,8 @@ export interface ListeQuery {
   q?: string;
   sort?: string;
   order?: string;
+
+  [key: string]: string | undefined;
 }
 
 export type SearchParams = Promise<ListeQuery>;

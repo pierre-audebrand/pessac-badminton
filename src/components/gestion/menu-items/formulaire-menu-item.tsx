@@ -9,6 +9,7 @@ import type { MenuItemFormState } from "@/actions/menu-item.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { libelleMenu } from "../../../lib/menus";
 import {
   Select,
   SelectContent,
@@ -25,11 +26,13 @@ type Props = {
 
   pages: Pick<Page, "id" | "titre">[];
 
-  parents: {
-    id: string;
-    libelle: string;
-    menu: Menu;
-  }[];
+  parentsParMenu: Record<
+    Menu,
+    {
+      id: string;
+      libelle: string;
+    }[]
+  >;
 
   menuItem?: {
     menu: Menu;
@@ -51,7 +54,7 @@ const initialState: MenuItemFormState = {};
 export function FormulaireMenuItem({
   action,
   pages,
-  parents,
+  parentsParMenu,
   menuItem,
   texteBouton,
 }: Props) {
@@ -59,7 +62,7 @@ export function FormulaireMenuItem({
 
   const [type, setType] = useState(menuItem?.type ?? TypeMenuItem.PAGE);
 
-  const [menu, setMenu] = useState(menuItem?.menu ?? Menu.PRINCIPAL);
+  const [menu, setMenu] = useState(menuItem?.menu ?? Menu.EN_TETE);
 
   const [parentId, setParentId] = useState<string | null>(
     menuItem?.parentId ?? null,
@@ -68,6 +71,8 @@ export function FormulaireMenuItem({
   const [pageId, setPageId] = useState<string | null>(menuItem?.pageId ?? null);
 
   const [url, setUrl] = useState(menuItem?.url ?? "");
+
+  const parents = parentsParMenu[menu];
 
   return (
     <form action={formAction} className="max-w-2xl space-y-6" noValidate>
@@ -78,15 +83,25 @@ export function FormulaireMenuItem({
 
         <input type="hidden" name="menu" value={menu} />
 
-        <Select value={menu} onValueChange={(value) => setMenu(value as Menu)}>
+        <Select
+          value={menu}
+          onValueChange={(value) => {
+            setMenu(value as Menu);
+            setParentId(null);
+          }}
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value={Menu.PRINCIPAL}>Menu principal</SelectItem>
+            <SelectItem value={Menu.EN_TETE}>
+              {libelleMenu(Menu.EN_TETE)}
+            </SelectItem>
 
-            <SelectItem value={Menu.FOOTER}>Pied de page</SelectItem>
+            <SelectItem value={Menu.PIED_DE_PAGE}>
+              {libelleMenu(Menu.PIED_DE_PAGE)}
+            </SelectItem>
           </SelectContent>
         </Select>
 

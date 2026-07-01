@@ -8,7 +8,7 @@ CREATE TYPE "TypeCreneau" AS ENUM ('ENTRAINEMENT', 'JEU_LIBRE');
 CREATE TYPE "TypeMenuItem" AS ENUM ('PAGE', 'URL', 'GROUPE');
 
 -- CreateEnum
-CREATE TYPE "Menu" AS ENUM ('PRINCIPAL', 'FOOTER');
+CREATE TYPE "Menu" AS ENUM ('EN_TETE', 'PIED_DE_PAGE');
 
 -- CreateTable
 CREATE TABLE "utilisateurs" (

@@ -52,7 +52,7 @@ export default async function MenuItemsPage({ searchParams }: Props) {
           <h1 className="text-3xl font-bold">Éléments de menu</h1>
 
           <p className="text-muted-foreground">
-            Gérez les menus de navigation du site.
+            Gérez les éléments de navigation du site.
           </p>
         </div>
 

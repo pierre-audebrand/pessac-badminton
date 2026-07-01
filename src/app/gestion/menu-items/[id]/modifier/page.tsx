@@ -12,6 +12,7 @@ import {
 import { listerPages } from "@/services/page.service";
 
 import { FormulaireMenuItem } from "@/components/gestion/menu-items/formulaire-menu-item";
+import { Menu } from "@prisma/client";
 
 type Props = {
   params: Promise<{
@@ -30,9 +31,10 @@ export default async function ModifierMenuItemPage({ params }: Props) {
     notFound();
   }
 
-  const [pages, parents] = await Promise.all([
+  const [pages, parentsEnTete, parentsPiedDePage] = await Promise.all([
     listerPages(),
-    listerParentsMenuItems(menuItem.id),
+    listerParentsMenuItems(Menu.EN_TETE, menuItem.id),
+    listerParentsMenuItems(Menu.PIED_DE_PAGE, menuItem.id),
   ]);
 
   return (
@@ -49,7 +51,10 @@ export default async function ModifierMenuItemPage({ params }: Props) {
         action={modifierMenuItemAction.bind(null, menuItem.id)}
         texteBouton="Enregistrer"
         pages={pages}
-        parents={parents}
+        parentsParMenu={{
+          [Menu.EN_TETE]: parentsEnTete,
+          [Menu.PIED_DE_PAGE]: parentsPiedDePage,
+        }}
         menuItem={{
           menu: menuItem.menu,
           parentId: menuItem.parentId,

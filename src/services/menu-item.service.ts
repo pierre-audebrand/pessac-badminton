@@ -1,11 +1,13 @@
+import { Menu, Prisma, TypeMenuItem } from "@prisma/client";
+
 import { EntiteIntrouvableError } from "@/lib/errors";
 import { ResultatPagine } from "@/lib/pagination";
 import { prisma } from "@/lib/prisma";
+
 import {
   CreerMenuItemData,
   ModifierMenuItemData,
 } from "@/schemas/menu-item.schemas";
-import { Menu, Prisma, TypeMenuItem } from "@prisma/client";
 
 export const menuItemSortableFields = [
   "libelle",
@@ -35,19 +37,98 @@ export interface RechercherMenuItemsParams {
   order?: "asc" | "desc";
 }
 
-const menuItemInclude = {
+/* -------------------------------------------------------------------------- */
+/*                                    Include                                 */
+/* -------------------------------------------------------------------------- */
+
+const menuItemListInclude = {
   page: true,
   parent: true,
+} satisfies Prisma.MenuItemInclude;
+
+const menuItemDetailInclude = {
+  page: true,
+
+  parent: {
+    include: {
+      page: true,
+    },
+  },
+
   enfants: {
+    include: {
+      page: true,
+    },
+
     orderBy: {
       ordre: "asc",
     },
   },
 } satisfies Prisma.MenuItemInclude;
 
+const menuItemTreeInclude = {
+  page: true,
+  parent: true,
+} satisfies Prisma.MenuItemInclude;
+
+/* -------------------------------------------------------------------------- */
+/*                                     Types                                  */
+/* -------------------------------------------------------------------------- */
+
 export type MenuItemRecherche = Prisma.MenuItemGetPayload<{
-  include: typeof menuItemInclude;
+  include: typeof menuItemListInclude;
 }>;
+
+export type MenuItemDetail = Prisma.MenuItemGetPayload<{
+  include: typeof menuItemDetailInclude;
+}>;
+
+export type MenuItemArbre = Prisma.MenuItemGetPayload<{
+  include: typeof menuItemTreeInclude;
+}>;
+
+export type MenuItemHierarchique = MenuItemArbre & {
+  enfants: MenuItemHierarchique[];
+};
+
+/* -------------------------------------------------------------------------- */
+/*                               Helpers privés                               */
+/* -------------------------------------------------------------------------- */
+
+function trierArbre(items: MenuItemHierarchique[]) {
+  items.sort((a, b) => a.ordre - b.ordre);
+
+  items.forEach((item) => trierArbre(item.enfants));
+}
+
+function construireArbreMenu(items: MenuItemArbre[]): MenuItemHierarchique[] {
+  const map = new Map<string, MenuItemHierarchique>();
+
+  for (const item of items) {
+    map.set(item.id, {
+      ...item,
+      enfants: [],
+    });
+  }
+
+  const racines: MenuItemHierarchique[] = [];
+
+  for (const item of map.values()) {
+    if (item.parentId) {
+      map.get(item.parentId)?.enfants.push(item);
+    } else {
+      racines.push(item);
+    }
+  }
+
+  trierArbre(racines);
+
+  return racines;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   Lecture                                  */
+/* -------------------------------------------------------------------------- */
 
 export async function rechercherMenuItems({
   page = 1,
@@ -63,23 +144,29 @@ export async function rechercherMenuItems({
 
   const where: Prisma.MenuItemWhereInput = {
     ...(search && {
-      libelle: {
-        contains: search,
-        mode: "insensitive",
-      },
+      OR: [
+        {
+          libelle: {
+            contains: search,
+            mode: "insensitive",
+          },
+        },
+        {
+          page: {
+            titre: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        },
+      ],
     }),
 
-    ...(menu && {
-      menu,
-    }),
+    ...(menu && { menu }),
 
-    ...(type && {
-      type,
-    }),
+    ...(type && { type }),
 
-    ...(actif !== undefined && {
-      actif,
-    }),
+    ...(actif !== undefined && { actif }),
   };
 
   const safeSort = menuItemSortableFields.includes(sort) ? sort : "ordre";
@@ -88,15 +175,23 @@ export async function rechercherMenuItems({
 
   const safePageSize = Math.min(Math.max(1, pageSize), 100);
 
-  const [menuItems, total] = await Promise.all([
+  const [elements, total] = await Promise.all([
     prisma.menuItem.findMany({
       where,
 
-      include: menuItemInclude,
+      include: menuItemListInclude,
 
-      orderBy: {
-        [safeSort]: order,
-      },
+      orderBy:
+        safeSort === "ordre"
+          ? [{ menu: "asc" }, { parentId: "asc" }, { ordre: "asc" }]
+          : [
+              {
+                [safeSort]: order,
+              },
+              {
+                libelle: "asc",
+              },
+            ],
 
       skip: (safePage - 1) * safePageSize,
 
@@ -109,7 +204,7 @@ export async function rechercherMenuItems({
   ]);
 
   return {
-    elements: menuItems,
+    elements,
 
     total,
 
@@ -121,9 +216,45 @@ export async function rechercherMenuItems({
   };
 }
 
-export async function listerMenuItems() {
+export async function recupererArbreMenu(
+  menu: Menu,
+): Promise<MenuItemHierarchique[]> {
+  const items = await prisma.menuItem.findMany({
+    where: {
+      menu,
+    },
+
+    include: menuItemTreeInclude,
+
+    orderBy: {
+      ordre: "asc",
+    },
+  });
+
+  return construireArbreMenu(items);
+}
+
+export async function recupererMenuItemParId(
+  menuItemId: string,
+): Promise<MenuItemDetail> {
+  const menuItem = await prisma.menuItem.findUnique({
+    where: {
+      id: menuItemId,
+    },
+
+    include: menuItemDetailInclude,
+  });
+
+  if (!menuItem) {
+    throw new EntiteIntrouvableError("Élément de menu");
+  }
+
+  return menuItem;
+}
+
+export async function listerMenuItems(): Promise<MenuItemRecherche[]> {
   return prisma.menuItem.findMany({
-    include: menuItemInclude,
+    include: menuItemListInclude,
 
     orderBy: [
       {
@@ -136,9 +267,10 @@ export async function listerMenuItems() {
   });
 }
 
-export async function listerParentsMenuItems(menuItemId?: string) {
+export async function listerParentsMenuItems(menu: Menu, menuItemId?: string) {
   return prisma.menuItem.findMany({
     where: {
+      menu,
       parentId: null,
 
       ...(menuItemId && {
@@ -166,21 +298,9 @@ export async function listerParentsMenuItems(menuItemId?: string) {
   });
 }
 
-export async function recupererMenuItemParId(menuItemId: string) {
-  const menuItem = await prisma.menuItem.findUnique({
-    where: {
-      id: menuItemId,
-    },
-
-    include: menuItemInclude,
-  });
-
-  if (!menuItem) {
-    throw new EntiteIntrouvableError("Élément de menu");
-  }
-
-  return menuItem;
-}
+/* -------------------------------------------------------------------------- */
+/*                               Erreurs métier                               */
+/* -------------------------------------------------------------------------- */
 
 export class ParentInvalideError extends Error {
   constructor() {
@@ -206,6 +326,16 @@ export class PageDejaUtiliseeDansMenuError extends Error {
   }
 }
 
+export class MenuItemPossedeDesEnfantsError extends Error {
+  constructor() {
+    super("Impossible de supprimer un élément contenant des sous-éléments.");
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                Validation                                  */
+/* -------------------------------------------------------------------------- */
+
 async function verifierMenuItem(
   data: CreerMenuItemData | ModifierMenuItemData,
   menuItemId?: string,
@@ -229,74 +359,80 @@ async function verifierMenuItem(
       throw new ParentDansUnAutreMenuError();
     }
 
-    // Maximum 2 niveaux
     if (parent.parentId) {
       throw new ParentNonAutoriseError();
     }
   }
 
-  if (data.type === TypeMenuItem.PAGE) {
-    const page = await prisma.page.findUnique({
-      where: {
-        id: data.pageId!,
-      },
-    });
-
-    if (!page) {
-      throw new EntiteIntrouvableError("Page");
-    }
-
-    const pageExistante = await prisma.menuItem.findFirst({
-      where: {
-        menu: data.menu,
-        pageId: data.pageId!,
-
-        ...(menuItemId && {
-          NOT: {
-            id: menuItemId,
-          },
-        }),
-      },
-    });
-
-    if (pageExistante) {
-      throw new PageDejaUtiliseeDansMenuError();
-    }
+  if (data.type !== TypeMenuItem.PAGE) {
+    return;
   }
+
+  const page = await prisma.page.findUnique({
+    where: {
+      id: data.pageId!,
+    },
+  });
+
+  if (!page) {
+    throw new EntiteIntrouvableError("Page");
+  }
+
+  const pageExistante = await prisma.menuItem.findFirst({
+    where: {
+      menu: data.menu,
+
+      pageId: data.pageId!,
+
+      ...(menuItemId && {
+        NOT: {
+          id: menuItemId,
+        },
+      }),
+    },
+  });
+
+  if (pageExistante) {
+    throw new PageDejaUtiliseeDansMenuError();
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   CRUD                                     */
+/* -------------------------------------------------------------------------- */
+
+function construireDonneesMenuItem(
+  data: CreerMenuItemData | ModifierMenuItemData,
+): Prisma.MenuItemUncheckedCreateInput {
+  return {
+    menu: data.menu,
+
+    parentId: data.parentId,
+
+    libelle: data.libelle,
+
+    type: data.type,
+
+    pageId: data.pageId,
+
+    url: data.url,
+
+    ordre: data.ordre,
+
+    nouvelOnglet: data.nouvelOnglet,
+
+    actif: data.actif,
+  };
 }
 
 export async function creerMenuItem(data: CreerMenuItemData) {
   await verifierMenuItem(data);
 
   return prisma.menuItem.create({
-    data: {
-      menu: data.menu,
+    data: construireDonneesMenuItem(data),
 
-      parentId: data.parentId,
-
-      libelle: data.libelle,
-
-      type: data.type,
-
-      pageId: data.pageId,
-
-      url: data.url,
-
-      ordre: data.ordre,
-
-      nouvelOnglet: data.nouvelOnglet,
-
-      actif: data.actif,
-    },
-
-    include: menuItemInclude,
+    include: menuItemListInclude,
   });
-}
-
-export class MenuItemPossedeDesEnfantsError extends Error {
-  constructor() {
-    super("Impossible de supprimer un élément contenant des sous-éléments.");
-  }
 }
 
 export async function modifierMenuItem(
@@ -312,27 +448,9 @@ export async function modifierMenuItem(
       id: menuItemId,
     },
 
-    data: {
-      menu: data.menu,
+    data: construireDonneesMenuItem(data),
 
-      parentId: data.parentId,
-
-      libelle: data.libelle,
-
-      type: data.type,
-
-      pageId: data.pageId,
-
-      url: data.url,
-
-      ordre: data.ordre,
-
-      nouvelOnglet: data.nouvelOnglet,
-
-      actif: data.actif,
-    },
-
-    include: menuItemInclude,
+    include: menuItemListInclude,
   });
 }
 

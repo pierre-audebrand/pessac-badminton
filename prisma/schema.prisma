@@ -251,8 +251,8 @@ enum TypeMenuItem {
 }
 
 enum Menu {
-  PRINCIPAL
-  FOOTER
+  EN_TETE
+  PIED_DE_PAGE
 }
 
 model MenuItem {

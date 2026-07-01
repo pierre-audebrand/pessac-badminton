@@ -21,7 +21,7 @@ interface Props {
   menuItem: MenuItemRecherche;
 }
 
-export function MenuItemActions({ menuItem }: Props) {
+export function MenuTreeActions({ menuItem }: Props) {
   return (
     <EntityContainer>
       <EntityDeleteAction

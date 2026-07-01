@@ -7,8 +7,8 @@ import { DataTableColumnHeader } from "@/components/data-table";
 import { MenuItemRecherche } from "@/services/menu-item.service";
 
 import { MenuItemActions } from "./actions";
-import { MenuBadge } from "@/components/gestion/menu-items/menu-badge";
-import { TypeMenuItemBadge } from "@/components/gestion/menu-items/type-badge";
+import { MenuBadge } from "@/components/gestion/menu-items/badges/menu-badge";
+import { TypeBadge } from "@/components/gestion/menu-items/badges/type-badge";
 
 export function getMenuItemColumns(
   sort: string,
@@ -59,7 +59,7 @@ export function getMenuItemColumns(
         />
       ),
 
-      cell: ({ row }) => <TypeMenuItemBadge type={row.original.type} />,
+      cell: ({ row }) => <TypeBadge type={row.original.type} />,
     },
 
     {

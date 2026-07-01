@@ -7,13 +7,15 @@ import { listerPages } from "@/services/page.service";
 import { listerParentsMenuItems } from "@/services/menu-item.service";
 
 import { FormulaireMenuItem } from "@/components/gestion/menu-items/formulaire-menu-item";
+import { Menu } from "@prisma/client";
 
 export default async function NouveauMenuItemPage() {
   await exigerPermission(Permissions.MENUS_GERER.code);
 
-  const [pages, parents] = await Promise.all([
+  const [pages, parentsEnTete, parentsPiedDePage] = await Promise.all([
     listerPages(),
-    listerParentsMenuItems(),
+    listerParentsMenuItems(Menu.EN_TETE),
+    listerParentsMenuItems(Menu.PIED_DE_PAGE),
   ]);
 
   return (
@@ -29,7 +31,10 @@ export default async function NouveauMenuItemPage() {
       <FormulaireMenuItem
         action={creerMenuItemAction}
         pages={pages}
-        parents={parents}
+        parentsParMenu={{
+          [Menu.EN_TETE]: parentsEnTete,
+          [Menu.PIED_DE_PAGE]: parentsPiedDePage,
+        }}
         texteBouton="Créer l'élément"
       />
     </div>

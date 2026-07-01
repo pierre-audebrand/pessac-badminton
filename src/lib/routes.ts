@@ -104,6 +104,8 @@ export const Routes = {
     return `/gestion/pages/${id}/modifier`;
   },
 
+  GESTION_MENUS: "/gestion/menus",
+
   GESTION_MENU_ITEMS: "/gestion/menu-items",
   GESTION_MENU_ITEMS_NOUVEAU: "/gestion/menu-items/nouvelle",
   menuItem(id: string) {

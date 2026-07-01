@@ -14,8 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageSection } from "@/components/ui/page/page-section";
 
-import { MenuBadge } from "@/components/gestion/menu-items/menu-badge";
-import { TypeMenuItemBadge } from "@/components/gestion/menu-items/type-badge";
+import { MenuBadge } from "@/components/gestion/menu-items/badges/menu-badge";
+import { TypeBadge } from "@/components/gestion/menu-items/badges/type-badge";
 
 type Props = {
   params: Promise<{
@@ -73,7 +73,7 @@ export default async function MenuItemPage({ params }: Props) {
 
           <div>
             <p className="text-sm text-muted-foreground">Type</p>
-            <TypeMenuItemBadge type={menuItem.type} />
+            <TypeBadge type={menuItem.type} />
           </div>
 
           <div>
@@ -138,7 +138,7 @@ export default async function MenuItemPage({ params }: Props) {
               >
                 <span>{enfant.libelle}</span>
 
-                <TypeMenuItemBadge type={enfant.type} />
+                <TypeBadge type={enfant.type} />
               </li>
             ))}
           </ul>

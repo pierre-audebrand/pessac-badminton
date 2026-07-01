@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { TypeMenuItem } from "@prisma/client";
 
-export function TypeMenuItemBadge({ type }: { type: TypeMenuItem }) {
+export function TypeBadge({ type }: { type: TypeMenuItem }) {
   switch (type) {
     case TypeMenuItem.PAGE:
       return (

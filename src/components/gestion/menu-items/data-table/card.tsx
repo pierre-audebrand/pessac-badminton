@@ -1,11 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { Menu, TypeMenuItem } from "@prisma/client";
-
 import { MenuItemRecherche } from "@/services/menu-item.service";
 
 import { MenuItemActions } from "./actions";
+import { libelleMenu } from "@/lib/menus";
 
 interface Props {
   menuItem: MenuItemRecherche;
@@ -28,7 +27,7 @@ export function MenuItemCard({ menuItem }: Props) {
         <div className="space-y-1 text-sm">
           <p>
             <span className="text-muted-foreground">Menu :</span>{" "}
-            {menuItem.menu === Menu.PRINCIPAL ? "Principal" : "Footer"}
+            {libelleMenu(menuItem.menu)}
           </p>
 
           <p>

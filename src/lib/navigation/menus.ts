@@ -15,7 +15,8 @@ import {
   UsersRound,
   Key,
   CalendarX2,
-  Menu,
+  ListTree,
+  PanelTop,
 } from "lucide-react";
 
 import { Routes } from "@/lib/routes";
@@ -134,7 +135,12 @@ export const menuGestion: MenuItem[] = [
   },
   {
     href: Routes.GESTION_MENU_ITEMS,
+    libelle: "Éléments de menu",
+    icon: ListTree,
+  },
+  {
+    href: Routes.GESTION_MENUS,
     libelle: "Menus",
-    icon: Menu,
+    icon: PanelTop,
   },
 ];
