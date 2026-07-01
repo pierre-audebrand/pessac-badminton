@@ -59,7 +59,7 @@ export default async function GroupesPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher un groupe..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_GROUPES_NOUVEAU}>
+            <Link href={Routes.GESTION_GROUPES_CREER}>
               <Users className="h-4 w-4" />
               Nouveau groupe
             </Link>

@@ -62,7 +62,7 @@ export default async function IndisponibilitesPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher une indisponibilité..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_INDISPONIBILITES_NOUVELLE}>
+            <Link href={Routes.GESTION_INDISPONIBILITES_CREER}>
               <CalendarX2 className="h-4 w-4" />
               Nouvelle indisponibilité
             </Link>

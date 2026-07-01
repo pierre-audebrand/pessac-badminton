@@ -62,7 +62,7 @@ export default async function UtilisateursPage({ searchParams }: PageProps) {
           <DataTableToolbar placeholder="Rechercher un utilisateur..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_UTILISATEURS_NOUVEL}>
+            <Link href={Routes.GESTION_UTILISATEURS_CREER}>
               <UserPlus className="h-4 w-4" />
               Nouvel utilisateur
             </Link>

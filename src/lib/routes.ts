@@ -25,7 +25,7 @@ export const Routes = {
   GESTION: "/gestion",
 
   GESTION_UTILISATEURS: "/gestion/utilisateurs",
-  GESTION_UTILISATEURS_NOUVEL: "/gestion/utilisateurs/nouvel",
+  GESTION_UTILISATEURS_CREER: "/gestion/utilisateurs/creer",
   utilisateur(id: string) {
     return `/gestion/utilisateurs/${id}`;
   },
@@ -42,7 +42,7 @@ export const Routes = {
   },
 
   GESTION_ROLES: "/gestion/roles",
-  GESTION_ROLES_NOUVEAU: "/gestion/roles/nouveau",
+  GESTION_ROLES_CREER: "/gestion/roles/creer",
   role(id: string) {
     return `/gestion/roles/${id}`;
   },
@@ -56,7 +56,7 @@ export const Routes = {
   },
 
   GESTION_GROUPES: "/gestion/groupes",
-  GESTION_GROUPES_NOUVEAU: "/gestion/groupes/nouveau",
+  GESTION_GROUPES_CREER: "/gestion/groupes/creer",
   groupe(id: string) {
     return `/gestion/groupes/${id}`;
   },
@@ -65,7 +65,7 @@ export const Routes = {
   },
 
   GESTION_SALLES: "/gestion/salles",
-  GESTION_SALLES_NOUVELLE: "/gestion/salles/nouvelle",
+  GESTION_SALLES_CREER: "/gestion/salles/creer",
   salle(id: string) {
     return `/gestion/salles/${id}`;
   },
@@ -74,7 +74,7 @@ export const Routes = {
   },
 
   GESTION_CRENEAUX: "/gestion/creneaux",
-  GESTION_CRENEAUX_NOUVEAU: "/gestion/creneaux/nouveau",
+  GESTION_CRENEAUX_CREER: "/gestion/creneaux/creer",
   creneau(id: string) {
     return `/gestion/creneaux/${id}`;
   },
@@ -87,7 +87,7 @@ export const Routes = {
   },
 
   GESTION_INDISPONIBILITES: "/gestion/indisponibilites",
-  GESTION_INDISPONIBILITES_NOUVELLE: "/gestion/indisponibilites/nouvelle",
+  GESTION_INDISPONIBILITES_CREER: "/gestion/indisponibilites/creer",
   indisponibilite(id: string) {
     return `/gestion/indisponibilites/${id}`;
   },
@@ -96,7 +96,7 @@ export const Routes = {
   },
 
   GESTION_PAGES: "/gestion/pages",
-  GESTION_PAGES_NOUVELLE: "/gestion/pages/nouvelle",
+  GESTION_PAGES_CREER: "/gestion/pages/creer",
   page(id: string) {
     return `/gestion/pages/${id}`;
   },
@@ -107,7 +107,7 @@ export const Routes = {
   GESTION_MENUS: "/gestion/menus",
 
   GESTION_MENU_ITEMS: "/gestion/menu-items",
-  GESTION_MENU_ITEMS_NOUVEAU: "/gestion/menu-items/nouvel",
+  GESTION_MENU_ITEMS_CREER: "/gestion/menu-items/creer",
   menuItem(id: string) {
     return `/gestion/menu-items/${id}`;
   },

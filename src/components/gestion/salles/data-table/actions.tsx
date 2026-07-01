@@ -38,7 +38,7 @@ export function SalleActions({ salle }: Props) {
       />
 
       <EntityCustomAction
-        href={`${Routes.GESTION_INDISPONIBILITES_NOUVELLE}?salleId=${salle.id}`}
+        href={`${Routes.GESTION_INDISPONIBILITES_CREER}?salleId=${salle.id}`}
         icon={CalendarX2}
         label="Ajouter une indisponibilité"
       />

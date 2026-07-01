@@ -57,7 +57,7 @@ export default async function PagesPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher une page..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_PAGES_NOUVELLE}>
+            <Link href={Routes.GESTION_PAGES_CREER}>
               <FilePlus2 className="h-4 w-4" />
               Nouvelle page
             </Link>

@@ -58,7 +58,7 @@ export default async function RolesPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher un rôle..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_ROLES_NOUVEAU}>
+            <Link href={Routes.GESTION_ROLES_CREER}>
               <ShieldPlus className="h-4 w-4" />
               Nouveau rôle
             </Link>

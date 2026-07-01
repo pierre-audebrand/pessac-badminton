@@ -59,7 +59,7 @@ export default async function SallesPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher une salle..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_SALLES_NOUVELLE}>
+            <Link href={Routes.GESTION_SALLES_CREER}>
               <Building2 className="h-4 w-4" />
               Nouvelle salle
             </Link>

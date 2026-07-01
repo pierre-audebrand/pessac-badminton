@@ -66,7 +66,7 @@ export default async function SallePage({ params }: Props) {
 
           <Button asChild>
             <Link
-              href={`${Routes.GESTION_INDISPONIBILITES_NOUVELLE}?salleId=${salle.id}`}
+              href={`${Routes.GESTION_INDISPONIBILITES_CREER}?salleId=${salle.id}`}
             >
               <CalendarX2 className="h-4 w-4" />
               Ajouter une indisponibilité

@@ -45,7 +45,7 @@ export default async function MenuItemsPage({ searchParams }: Props) {
         <MenuSelector value={menu} />
 
         <Button asChild>
-          <Link href={`${Routes.GESTION_MENU_ITEMS_NOUVEAU}?menu=${menu}`}>
+          <Link href={`${Routes.GESTION_MENU_ITEMS_CREER}?menu=${menu}`}>
             <Plus className="h-4 w-4" />
             Nouvel élément
           </Link>

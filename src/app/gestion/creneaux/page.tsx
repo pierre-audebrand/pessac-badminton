@@ -59,7 +59,7 @@ export default async function CreneauxPage({ searchParams }: Props) {
           <DataTableToolbar placeholder="Rechercher un créneau..." />
 
           <Button asChild>
-            <Link href={Routes.GESTION_CRENEAUX_NOUVEAU}>
+            <Link href={Routes.GESTION_CRENEAUX_CREER}>
               <CalendarClock className="h-4 w-4" />
               Nouveau créneau
             </Link>
