@@ -39,3 +39,11 @@ export function variantMenu(
 ): VariantProps<typeof badgeVariants>["variant"] {
   return menuMetadata[menu].variant;
 }
+
+export function lireMenuQuery(menu: string | undefined): Menu {
+  if (menu && Object.values(Menu).includes(menu as Menu)) {
+    return menu as Menu;
+  }
+
+  return Menu.EN_TETE;
+}

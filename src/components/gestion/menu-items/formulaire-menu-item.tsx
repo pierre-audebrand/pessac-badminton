@@ -34,6 +34,10 @@ type Props = {
     }[]
   >;
 
+  afficherSelectionMenu?: boolean;
+
+  menuParDefaut?: Menu;
+
   menuItem?: {
     menu: Menu;
     parentId: string | null;
@@ -55,6 +59,8 @@ export function FormulaireMenuItem({
   action,
   pages,
   parentsParMenu,
+  afficherSelectionMenu = true,
+  menuParDefaut,
   menuItem,
   texteBouton,
 }: Props) {
@@ -62,7 +68,9 @@ export function FormulaireMenuItem({
 
   const [type, setType] = useState(menuItem?.type ?? TypeMenuItem.PAGE);
 
-  const [menu, setMenu] = useState(menuItem?.menu ?? Menu.EN_TETE);
+  const [menu, setMenu] = useState(
+    menuItem?.menu ?? menuParDefaut ?? Menu.EN_TETE,
+  );
 
   const [parentId, setParentId] = useState<string | null>(
     menuItem?.parentId ?? null,
@@ -77,39 +85,55 @@ export function FormulaireMenuItem({
   return (
     <form action={formAction} className="max-w-2xl space-y-6" noValidate>
       <div className="space-y-2">
-        <Label htmlFor="menu" required>
-          Menu
-        </Label>
+        {afficherSelectionMenu ? (
+          <>
+            <Label htmlFor="menu" required>
+              Menu
+            </Label>
 
-        <input type="hidden" name="menu" value={menu} />
+            <input type="hidden" name="menu" value={menu} />
 
-        <Select
-          value={menu}
-          onValueChange={(value) => {
-            setMenu(value as Menu);
-            setParentId(null);
-          }}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
+            <Select
+              value={menu}
+              onValueChange={(value) => {
+                setMenu(value as Menu);
+                setParentId(null);
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
 
-          <SelectContent>
-            <SelectItem value={Menu.EN_TETE}>
-              {libelleMenu(Menu.EN_TETE)}
-            </SelectItem>
+              <SelectContent>
+                <SelectItem value={Menu.EN_TETE}>
+                  {libelleMenu(Menu.EN_TETE)}
+                </SelectItem>
 
-            <SelectItem value={Menu.PIED_DE_PAGE}>
-              {libelleMenu(Menu.PIED_DE_PAGE)}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+                <SelectItem value={Menu.PIED_DE_PAGE}>
+                  {libelleMenu(Menu.PIED_DE_PAGE)}
+                </SelectItem>
+              </SelectContent>
+            </Select>
 
-        {state.erreurs?.menu?.map((erreur) => (
-          <p key={erreur} className="text-sm text-destructive">
-            {erreur}
-          </p>
-        ))}
+            {state.erreurs?.menu?.map((erreur) => (
+              <p key={erreur} className="text-sm text-destructive">
+                {erreur}
+              </p>
+            ))}
+          </>
+        ) : (
+          <>
+            <input type="hidden" name="menu" value={menu} />
+
+            <div className="space-y-2">
+              <Label>Menu</Label>
+
+              <p className="text-sm text-muted-foreground">
+                {libelleMenu(menu)}
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="space-y-2">

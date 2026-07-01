@@ -107,7 +107,7 @@ export const Routes = {
   GESTION_MENUS: "/gestion/menus",
 
   GESTION_MENU_ITEMS: "/gestion/menu-items",
-  GESTION_MENU_ITEMS_NOUVEAU: "/gestion/menu-items/nouvelle",
+  GESTION_MENU_ITEMS_NOUVEAU: "/gestion/menu-items/nouvel",
   menuItem(id: string) {
     return `/gestion/menu-items/${id}`;
   },
