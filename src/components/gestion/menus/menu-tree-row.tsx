@@ -10,12 +10,15 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 import { ChevronLeft, ChevronRight, GripVertical } from "lucide-react";
+import { canIndent, canOutdent } from "./menu-tree.operations";
 
 interface Props {
   item: MenuTreeNode;
 
-  onIndent(id: string): void;
+  canIndent: boolean;
+  canOutdent: boolean;
 
+  onIndent(id: string): void;
   onOutdent(id: string): void;
 }
 
@@ -54,7 +57,8 @@ export function MenuTreeRow({ item, onIndent, onOutdent }: Props) {
               <button
                 type="button"
                 onClick={() => onOutdent(item.id)}
-                className="rounded p-1 hover:bg-muted"
+                disabled={!canOutdent}
+                className="rounded p-1 hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
                 title="Diminuer le niveau"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -63,7 +67,8 @@ export function MenuTreeRow({ item, onIndent, onOutdent }: Props) {
               <button
                 type="button"
                 onClick={() => onIndent(item.id)}
-                className="rounded p-1 hover:bg-muted"
+                disabled={!canIndent}
+                className="rounded p-1 hover:bg-muted disabled:pointer-events-none disabled:opacity-40"
                 title="Augmenter le niveau"
               >
                 <ChevronRight className="h-4 w-4" />

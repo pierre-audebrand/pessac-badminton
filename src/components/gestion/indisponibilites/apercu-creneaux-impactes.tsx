@@ -8,7 +8,7 @@ import { recupererOccurrencesImpacteesAction } from "@/actions/indisponibilite.a
 
 import { formaterDate } from "@/lib/dates";
 import { joursSemaine } from "@/lib/jours-semaine";
-import { OccurrenceCreneauImpactee } from "@/services/indisponibilite.service";
+import { OccurrenceCreneau } from "@/services/creneau.service";
 
 type Props = {
   salleId?: string;
@@ -19,9 +19,7 @@ type Props = {
 export function ApercuCreneauxImpactes({ salleId, debut, fin }: Props) {
   const [loading, setLoading] = useState(false);
 
-  const [occurrences, setOccurrences] = useState<OccurrenceCreneauImpactee[]>(
-    [],
-  );
+  const [occurrences, setOccurrences] = useState<OccurrenceCreneau[]>([]);
 
   const formulaireComplet = Boolean(salleId) && Boolean(debut) && Boolean(fin);
 

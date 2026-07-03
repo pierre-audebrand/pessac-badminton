@@ -16,7 +16,6 @@ import { PageSection } from "@/components/ui/page/page-section";
 
 import { MenuBadge } from "@/components/gestion/menu-items/badges/menu-badge";
 import { TypeMenuItemBadge } from "@/components/gestion/menu-items/badges/menu-item-type-badge";
-import { MenuItem } from "../../../../lib/navigation/types";
 
 type Props = {
   params: Promise<{

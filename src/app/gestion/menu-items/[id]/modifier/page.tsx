@@ -59,7 +59,6 @@ export default async function ModifierMenuItemPage({ params }: Props) {
           menu: menuItem.menu,
           parentId: menuItem.parentId,
           libelle: menuItem.libelle,
-          type: menuItem.type,
           pageId: menuItem.pageId,
           url: menuItem.url,
           ordre: menuItem.ordre,

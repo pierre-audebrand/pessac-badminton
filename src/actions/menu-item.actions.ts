@@ -30,6 +30,8 @@ import {
   MenuItemPossedeDesEnfantsError,
 } from "@/services/menu-item.service";
 
+import { reordonnerMenuItems } from "@/services/menu-item.service";
+
 export type MenuItemFormState = FormState<
   | "menu"
   | "parentId"
@@ -171,5 +173,25 @@ export async function modifierActivationMenuItemAction(
 function construireErreurParent(error: Error) {
   return {
     erreurs: construireErreur("parentId", error.message),
+  };
+}
+
+export interface ReordonnerMenuItemsData {
+  id: string;
+  parentId: string | null;
+  ordre: number;
+}
+
+export async function reordonnerMenuItemsAction(
+  items: ReordonnerMenuItemsData[],
+) {
+  await exigerPermission(Permissions.MENUS_GERER.code);
+
+  await reordonnerMenuItems(items);
+
+  revalidatePath(Routes.GESTION_MENU_ITEMS);
+
+  return {
+    success: true,
   };
 }

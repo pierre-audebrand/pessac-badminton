@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useTransition } from "react";
 
 import {
   DndContext,
@@ -13,26 +13,41 @@ import {
 
 import {
   SortableContext,
-  arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
 import { MenuItemHierarchique } from "@/services/menu-item.service";
 
-import { buildTree, flattenTree } from "./menu-tree.utils";
 import { MenuTreeRow } from "./menu-tree-row";
 import { MenuTreeNode } from "./menu-tree.types";
 
-import { normalizeFlatTree } from "./menu-tree.normalize";
+import {
+  flattenTree,
+  indentItem,
+  outdentItem,
+  moveItem,
+  canIndent,
+  canOutdent,
+} from "./menu-tree.operations";
+import { buildMenuItemUpdates } from "./menu-tree.updates";
+import { reordonnerMenuItemsAction } from "@/actions/menu-item.actions";
+import { Button } from "@/components/ui/button";
+import { diffMenuItemUpdates } from "./menu-tree.diff";
 
 interface Props {
   items: MenuItemHierarchique[];
 }
 
 export function MenuTreeEditor({ items }: Props) {
-  const initialItems = useMemo(() => flattenTree(items), [items]);
+  const [isPending, startTransition] = useTransition();
 
-  const [flatItems, setFlatItems] = useState<MenuTreeNode[]>(initialItems);
+  const [dirty, setDirty] = useState(false);
+
+  const initialFlatItems = useMemo(() => flattenTree(items), [items]);
+
+  const initialFlatItemsRef = useRef(initialFlatItems);
+
+  const [flatItems, setFlatItems] = useState(initialFlatItems);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -42,6 +57,32 @@ export function MenuTreeEditor({ items }: Props) {
     }),
   );
 
+  function updateTree(updater: (items: MenuTreeNode[]) => MenuTreeNode[]) {
+    setFlatItems((items) => updater(items));
+    setDirty(true);
+  }
+
+  function handleSave() {
+    startTransition(async () => {
+      const before = buildMenuItemUpdates(initialFlatItemsRef.current);
+
+      const after = buildMenuItemUpdates(flatItems);
+
+      const updates = diffMenuItemUpdates(before, after);
+
+      if (updates.length === 0) {
+        setDirty(false);
+        return;
+      }
+
+      await reordonnerMenuItemsAction(updates);
+
+      initialFlatItemsRef.current = flatItems;
+
+      setDirty(false);
+    });
+  }
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
@@ -49,45 +90,15 @@ export function MenuTreeEditor({ items }: Props) {
       return;
     }
 
-    setFlatItems((current) => {
-      const oldIndex = current.findIndex((item) => item.id === active.id);
-
-      const newIndex = current.findIndex((item) => item.id === over.id);
-
-      const moved = arrayMove(current, oldIndex, newIndex);
-
-      return flattenTree(buildTree(normalizeFlatTree(moved)));
-    });
+    updateTree((items) => moveItem(items, String(active.id), String(over.id)));
   }
 
   function handleIndent(id: string) {
-    setFlatItems((items) => {
-      const next = items.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              profondeur: item.profondeur + 1,
-            }
-          : item,
-      );
-
-      return flattenTree(buildTree(normalizeFlatTree(next)));
-    });
+    updateTree((items) => indentItem(items, id));
   }
 
   function handleOutdent(id: string) {
-    setFlatItems((items) => {
-      const next = items.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              profondeur: Math.max(0, item.profondeur - 1),
-            }
-          : item,
-      );
-
-      return flattenTree(buildTree(normalizeFlatTree(next)));
-    });
+    updateTree((items) => outdentItem(items, id));
   }
 
   return (
@@ -100,11 +111,36 @@ export function MenuTreeEditor({ items }: Props) {
         items={flatItems.map((item) => item.id)}
         strategy={verticalListSortingStrategy}
       >
+        <div className="flex justify-end gap-2">
+          {dirty && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setFlatItems(initialFlatItemsRef.current);
+                  setDirty(false);
+                }}
+              >
+                Réinitialiser
+              </Button>
+
+              <Button onClick={handleSave} disabled={isPending}>
+                {isPending
+                  ? "Enregistrement..."
+                  : "Enregistrer les modifications"}
+              </Button>
+            </>
+          )}
+        </div>
+
         <div className="space-y-2">
-          {flatItems.map((item) => (
+          {flatItems.map((item, index) => (
             <MenuTreeRow
               key={item.id}
               item={item}
+              canIndent={canIndent(flatItems, index)}
+              canOutdent={canOutdent(flatItems, index)}
               onIndent={handleIndent}
               onOutdent={handleOutdent}
             />

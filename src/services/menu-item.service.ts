@@ -478,3 +478,26 @@ export async function modifierActivationMenuItem(
     },
   });
 }
+
+export interface ReordonnerMenuItemData {
+  id: string;
+  parentId: string | null;
+  ordre: number;
+}
+
+export async function reordonnerMenuItems(items: ReordonnerMenuItemData[]) {
+  await prisma.$transaction(
+    items.map((item) =>
+      prisma.menuItem.update({
+        where: {
+          id: item.id,
+        },
+
+        data: {
+          parentId: item.parentId,
+          ordre: item.ordre,
+        },
+      }),
+    ),
+  );
+}
