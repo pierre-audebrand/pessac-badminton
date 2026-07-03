@@ -7,7 +7,7 @@ import { MenuItemHierarchique } from "@/services/menu-item.service";
 import { MenuTree } from "./menu-tree";
 import { MenuTreeActions } from "./menu-tree-actions";
 import { MenuBadge } from "../menu-items/badges/menu-badge";
-import { TypeBadge } from "../menu-items/badges/type-badge";
+import { TypeMenuItemBadge } from "../menu-items/badges/menu-item-type-badge";
 
 interface Props {
   item: MenuItemHierarchique;
@@ -27,7 +27,7 @@ export function MenuTreeItem({ item }: Props) {
 
                 <MenuBadge menu={item.menu} />
 
-                <TypeBadge type={item.type} />
+                <TypeMenuItemBadge pageId={item.pageId} url={item.url} />
 
                 {!item.actif && (
                   <span className="rounded bg-muted px-2 py-0.5 text-xs">
@@ -37,11 +37,9 @@ export function MenuTreeItem({ item }: Props) {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                {item.type === "PAGE" && item.page?.titre}
+                {item.pageId && item.page?.titre}
 
-                {item.type === "URL" && item.url}
-
-                {item.type === "GROUPE" && "Groupe"}
+                {item.url && item.url}
               </div>
             </div>
           </div>

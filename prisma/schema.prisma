@@ -244,12 +244,6 @@ model Page {
   @@map("pages")
 }
 
-enum TypeMenuItem {
-  PAGE
-  URL
-  GROUPE
-}
-
 enum Menu {
   EN_TETE
   PIED_DE_PAGE
@@ -268,8 +262,6 @@ model MenuItem {
   libelle String
 
   pageId String?
-
-  type TypeMenuItem
 
   page Page? @relation(fields: [pageId], references: [id])
 

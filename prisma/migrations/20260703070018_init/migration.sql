@@ -5,9 +5,6 @@ CREATE TYPE "JourSemaine" AS ENUM ('LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDR
 CREATE TYPE "TypeCreneau" AS ENUM ('ENTRAINEMENT', 'JEU_LIBRE');
 
 -- CreateEnum
-CREATE TYPE "TypeMenuItem" AS ENUM ('PAGE', 'URL', 'GROUPE');
-
--- CreateEnum
 CREATE TYPE "Menu" AS ENUM ('EN_TETE', 'PIED_DE_PAGE');
 
 -- CreateTable
@@ -169,7 +166,6 @@ CREATE TABLE "menu_items" (
     "parentId" TEXT,
     "libelle" TEXT NOT NULL,
     "pageId" TEXT,
-    "type" "TypeMenuItem" NOT NULL,
     "url" TEXT,
     "ordre" INTEGER NOT NULL DEFAULT 0,
     "nouvelOnglet" BOOLEAN NOT NULL DEFAULT false,

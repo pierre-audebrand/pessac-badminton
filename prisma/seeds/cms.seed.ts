@@ -50,7 +50,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Accueil",
-      type: "PAGE",
       pageId: accueil.id,
       ordre: 1,
     },
@@ -60,7 +59,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Le Club",
-      type: "GROUPE",
       ordre: 2,
     },
   });
@@ -71,7 +69,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: club.id,
         libelle: "Présentation",
-        type: "PAGE",
         pageId: presentation.id,
         ordre: 1,
       },
@@ -79,7 +76,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: club.id,
         libelle: "Le bureau",
-        type: "PAGE",
         pageId: bureau.id,
         ordre: 2,
       },
@@ -87,7 +83,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: club.id,
         libelle: "Les salles",
-        type: "PAGE",
         pageId: salles.id,
         ordre: 3,
       },
@@ -95,7 +90,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: club.id,
         libelle: "Nos partenaires",
-        type: "PAGE",
         pageId: partenaires.id,
         ordre: 4,
       },
@@ -106,7 +100,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Créneaux",
-      type: "PAGE",
       pageId: creneaux.id,
       ordre: 3,
     },
@@ -116,7 +109,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Adhésion",
-      type: "GROUPE",
       ordre: 4,
     },
   });
@@ -127,7 +119,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: adhesion.id,
         libelle: "Tarifs",
-        type: "PAGE",
         pageId: tarifs.id,
         ordre: 1,
       },
@@ -135,7 +126,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: adhesion.id,
         libelle: "Documents d'inscription",
-        type: "PAGE",
         pageId: documents.id,
         ordre: 2,
       },
@@ -143,7 +133,6 @@ export async function seedCms() {
         menu: Menu.EN_TETE,
         parentId: adhesion.id,
         libelle: "Règlement intérieur",
-        type: "PAGE",
         pageId: reglement.id,
         ordre: 3,
       },
@@ -154,7 +143,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Actualités",
-      type: "PAGE",
       pageId: actualites.id,
       ordre: 5,
     },
@@ -164,7 +152,6 @@ export async function seedCms() {
     data: {
       menu: Menu.EN_TETE,
       libelle: "Contact",
-      type: "PAGE",
       pageId: contact.id,
       ordre: 6,
     },
@@ -175,21 +162,18 @@ export async function seedCms() {
       {
         menu: Menu.PIED_DE_PAGE,
         libelle: "Mentions légales",
-        type: "PAGE",
         pageId: mentions.id,
         ordre: 1,
       },
       {
         menu: Menu.PIED_DE_PAGE,
         libelle: "Politique de confidentialité",
-        type: "PAGE",
         pageId: confidentialite.id,
         ordre: 2,
       },
       {
         menu: Menu.PIED_DE_PAGE,
         libelle: "Contact",
-        type: "PAGE",
         pageId: contact.id,
         ordre: 3,
       },

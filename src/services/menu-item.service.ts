@@ -1,4 +1,4 @@
-import { Menu, Prisma, TypeMenuItem } from "@prisma/client";
+import { Menu, Prisma } from "@prisma/client";
 
 import { EntiteIntrouvableError } from "@/lib/errors";
 import { ResultatPagine } from "@/lib/pagination";
@@ -12,7 +12,6 @@ import {
 export const menuItemSortableFields = [
   "libelle",
   "menu",
-  "type",
   "ordre",
   "actif",
   "createdAt",
@@ -27,8 +26,6 @@ export interface RechercherMenuItemsParams {
   q?: string;
 
   menu?: Menu;
-
-  type?: TypeMenuItem;
 
   actif?: boolean;
 
@@ -135,7 +132,6 @@ export async function rechercherMenuItems({
   pageSize = 20,
   q = "",
   menu,
-  type,
   actif,
   sort = "ordre",
   order = "asc",
@@ -163,8 +159,6 @@ export async function rechercherMenuItems({
     }),
 
     ...(menu && { menu }),
-
-    ...(type && { type }),
 
     ...(actif !== undefined && { actif }),
   };
@@ -364,36 +358,33 @@ async function verifierMenuItem(
     }
   }
 
-  if (data.type !== TypeMenuItem.PAGE) {
-    return;
-  }
+  if (data.pageId) {
+    const page = await prisma.page.findUnique({
+      where: {
+        id: data.pageId,
+      },
+    });
 
-  const page = await prisma.page.findUnique({
-    where: {
-      id: data.pageId!,
-    },
-  });
+    if (!page) {
+      throw new EntiteIntrouvableError("Page");
+    }
 
-  if (!page) {
-    throw new EntiteIntrouvableError("Page");
-  }
+    const pageExistante = await prisma.menuItem.findFirst({
+      where: {
+        menu: data.menu,
+        pageId: data.pageId,
 
-  const pageExistante = await prisma.menuItem.findFirst({
-    where: {
-      menu: data.menu,
+        ...(menuItemId && {
+          NOT: {
+            id: menuItemId,
+          },
+        }),
+      },
+    });
 
-      pageId: data.pageId!,
-
-      ...(menuItemId && {
-        NOT: {
-          id: menuItemId,
-        },
-      }),
-    },
-  });
-
-  if (pageExistante) {
-    throw new PageDejaUtiliseeDansMenuError();
+    if (pageExistante) {
+      throw new PageDejaUtiliseeDansMenuError();
+    }
   }
 }
 
@@ -411,11 +402,8 @@ function construireDonneesMenuItem(
 
     libelle: data.libelle,
 
-    type: data.type,
-
-    pageId: data.pageId,
-
-    url: data.url,
+    pageId: data.pageId || null,
+    url: data.url || null,
 
     ordre: data.ordre,
 

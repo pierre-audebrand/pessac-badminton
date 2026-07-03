@@ -5,7 +5,6 @@ import { Routes } from "@/lib/routes";
 import { Button } from "@/components/ui/button";
 import { obtenirSession } from "@/lib/authentification";
 import {
-  BoutonDeconnexion,
   BoutonDeconnexionMenu,
   BoutonDeconnexionMenuMobile,
 } from "../../auth/bouton-deconnexion";

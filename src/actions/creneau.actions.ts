@@ -73,8 +73,6 @@ export async function modifierCreneauAction(
 ): Promise<CreneauFormState> {
   await exigerPermission(Permissions.CRENEAUX_GERER.code);
 
-  console.log("type =", formData.get("type"));
-
   const resultatValidation = modifierCreneauSchema.safeParse({
     salleId: formData.get("salleId"),
     jourSemaine: formData.get("jourSemaine"),
@@ -83,8 +81,6 @@ export async function modifierCreneauAction(
     type: formData.get("type"),
     actif: formData.get("actif") === "on",
   });
-
-  console.log(resultatValidation.data);
 
   if (!resultatValidation.success) {
     return {

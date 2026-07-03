@@ -269,8 +269,6 @@ export async function modifierCreneau(
     throw new EntiteIntrouvableError("Creneau");
   }
 
-  console.log(data.type);
-
   /*const creneauEnConflit = await prisma.creneau.findFirst({
     where: {
       salleId: data.salleId,

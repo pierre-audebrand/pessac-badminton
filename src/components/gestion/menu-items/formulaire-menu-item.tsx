@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 
-import { Menu, Page, TypeMenuItem } from "@prisma/client";
+import { Menu, Page } from "@prisma/client";
 
 import type { MenuItemFormState } from "@/actions/menu-item.actions";
 
@@ -17,6 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+import { Folder, FileText, Globe } from "lucide-react";
+
+type TypeMenuItem = "NONE" | "PAGE" | "URL";
 
 type Props = {
   action: (
@@ -42,7 +48,6 @@ type Props = {
     menu: Menu;
     parentId: string | null;
     libelle: string;
-    type: TypeMenuItem;
     pageId: string | null;
     url: string | null;
     ordre: number;
@@ -66,7 +71,17 @@ export function FormulaireMenuItem({
 }: Props) {
   const [state, formAction] = useActionState(action, initialState);
 
-  const [type, setType] = useState(menuItem?.type ?? TypeMenuItem.PAGE);
+  const [typeMenuItem, setTypeMenuItem] = useState<TypeMenuItem>(() => {
+    if (menuItem?.pageId) {
+      return "PAGE";
+    }
+
+    if (menuItem?.url) {
+      return "URL";
+    }
+
+    return "NONE";
+  });
 
   const [menu, setMenu] = useState(
     menuItem?.menu ?? menuParDefaut ?? Menu.EN_TETE,
@@ -189,52 +204,60 @@ export function FormulaireMenuItem({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="type" required>
-          Type
-        </Label>
+        <Label>Type</Label>
 
-        <input type="hidden" name="type" value={type} />
-
-        <Select
-          value={type}
+        <ToggleGroup
+          type="single"
+          value={typeMenuItem}
+          variant="outline"
+          spacing={2}
+          className="w-full justify-start"
           onValueChange={(value) => {
-            setType(value as TypeMenuItem);
+            if (!value) {
+              return;
+            }
 
-            switch (value) {
-              case TypeMenuItem.PAGE:
+            const type = value as TypeMenuItem;
+
+            setTypeMenuItem(type);
+
+            switch (type) {
+              case "NONE":
+                setPageId(null);
                 setUrl("");
                 break;
 
-              case TypeMenuItem.URL:
-                setPageId(null);
+              case "PAGE":
+                setUrl("");
+                if (!pageId && pages.length === 1) {
+                  setPageId(pages[0].id);
+                }
                 break;
 
-              case TypeMenuItem.GROUPE:
+              case "URL":
                 setPageId(null);
-                setUrl("");
                 break;
             }
           }}
         >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
+          <ToggleGroupItem value="NONE" className="min-w-36">
+            <Folder className="mr-2 h-4 w-4" />
+            Sans lien
+          </ToggleGroupItem>
 
-          <SelectContent>
-            <SelectItem value={TypeMenuItem.PAGE}>Page</SelectItem>
-            <SelectItem value={TypeMenuItem.URL}>URL</SelectItem>
-            <SelectItem value={TypeMenuItem.GROUPE}>Groupe</SelectItem>
-          </SelectContent>
-        </Select>
+          <ToggleGroupItem value="PAGE" className="min-w-32">
+            <FileText className="mr-2 h-4 w-4" />
+            Page
+          </ToggleGroupItem>
 
-        {state.erreurs?.type?.map((erreur) => (
-          <p key={erreur} className="text-sm text-destructive">
-            {erreur}
-          </p>
-        ))}
+          <ToggleGroupItem value="URL" className="min-w-28">
+            <Globe className="mr-2 h-4 w-4" />
+            URL
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
 
-      {type === TypeMenuItem.PAGE && (
+      {typeMenuItem === "PAGE" && (
         <div className="space-y-2">
           <Label htmlFor="pageId" required>
             Page
@@ -271,7 +294,7 @@ export function FormulaireMenuItem({
         </div>
       )}
 
-      {type === TypeMenuItem.URL && (
+      {typeMenuItem === "URL" && (
         <>
           <div className="space-y-2">
             <Label htmlFor="url" required>
@@ -313,26 +336,6 @@ export function FormulaireMenuItem({
           ))}
         </>
       )}
-
-      <div className="space-y-2">
-        <Label htmlFor="ordre" required>
-          Ordre
-        </Label>
-
-        <Input
-          id="ordre"
-          name="ordre"
-          type="number"
-          min={0}
-          defaultValue={menuItem?.ordre ?? 0}
-        />
-
-        {state.erreurs?.ordre?.map((erreur) => (
-          <p key={erreur} className="text-sm text-destructive">
-            {erreur}
-          </p>
-        ))}
-      </div>
 
       <div className="flex items-center gap-3">
         <input

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { Menu, TypeMenuItem } from "@prisma/client";
+import { Menu } from "@prisma/client";
 
 import { nullableStringSchema } from "./common.schemas";
 
@@ -11,8 +11,6 @@ export const creerMenuItemSchema = z
     parentId: nullableStringSchema(),
 
     libelle: z.string().trim().min(1).max(100),
-
-    type: z.enum(TypeMenuItem),
 
     pageId: nullableStringSchema(),
 
@@ -28,74 +26,21 @@ export const creerMenuItemSchema = z
     actif: z.boolean(),
   })
   .superRefine((data, ctx) => {
-    switch (data.type) {
-      case TypeMenuItem.PAGE: {
-        if (!data.pageId) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["pageId"],
-            message: "Veuillez sélectionner une page.",
-          });
-        }
+    const hasPage = !!data.pageId;
+    const hasUrl = !!data.url;
 
-        if (data.url) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["url"],
-            message: "Une page ne peut pas avoir d'URL personnalisée.",
-          });
-        }
+    if (hasPage && hasUrl) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["pageId"],
+        message: "Choisissez une page ou une URL.",
+      });
 
-        if (data.nouvelOnglet) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["nouvelOnglet"],
-            message: "Cette option est disponible uniquement pour les URL.",
-          });
-        }
-
-        break;
-      }
-
-      case TypeMenuItem.URL: {
-        if (!data.url) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["url"],
-            message: "Veuillez saisir une URL.",
-          });
-        }
-
-        if (data.pageId) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["pageId"],
-            message: "Une URL ne peut pas être liée à une page.",
-          });
-        }
-
-        break;
-      }
-
-      case TypeMenuItem.GROUPE: {
-        if (data.pageId) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["pageId"],
-            message: "Un groupe ne peut pas être lié à une page.",
-          });
-        }
-
-        if (data.url) {
-          ctx.addIssue({
-            code: "custom",
-            path: ["url"],
-            message: "Un groupe ne peut pas avoir d'URL.",
-          });
-        }
-
-        break;
-      }
+      ctx.addIssue({
+        code: "custom",
+        path: ["url"],
+        message: "Choisissez une page ou une URL.",
+      });
     }
   });
 
