@@ -1,49 +1,29 @@
 import { badgeVariants } from "@/components/ui/badge";
 import { Menu } from "@prisma/client";
 import { VariantProps } from "class-variance-authority";
-import { LucideIcon, PanelBottom, PanelTop } from "lucide-react";
 
 export interface MenuMetadata {
-  label: string;
-  icon: LucideIcon;
+  libelle: string;
   variant?: VariantProps<typeof badgeVariants>["variant"];
 }
 
-const menuMetadata: Record<Menu, MenuMetadata> = {
+export const menus: Record<Menu, MenuMetadata> = {
   [Menu.EN_TETE]: {
-    label: "Menu d'en-tête",
-    icon: PanelTop,
+    libelle: "Menu d'en-tête",
   },
 
   [Menu.PIED_DE_PAGE]: {
-    label: "Menu de pied de page",
-    icon: PanelBottom,
+    libelle: "Menu de pied de page",
     variant: "secondary",
   },
 };
 
-export function recupererMenuData(menu: Menu): MenuMetadata {
-  return menuMetadata[menu];
-}
-
 export function libelleMenu(menu: Menu): string {
-  return menuMetadata[menu].label;
-}
-
-export function iconeMenu(menu: Menu): LucideIcon {
-  return menuMetadata[menu].icon;
-}
-
-export function variantMenu(
-  menu: Menu,
-): VariantProps<typeof badgeVariants>["variant"] {
-  return menuMetadata[menu].variant;
+  return menus[menu].libelle;
 }
 
 export function lireMenuQuery(menu: string | undefined): Menu {
-  if (menu && Object.values(Menu).includes(menu as Menu)) {
-    return menu as Menu;
-  }
-
-  return Menu.EN_TETE;
+  return Object.values(Menu).includes(menu as Menu)
+    ? (menu as Menu)
+    : Menu.EN_TETE;
 }

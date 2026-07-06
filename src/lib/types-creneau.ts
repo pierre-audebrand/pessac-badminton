@@ -8,4 +8,9 @@ export const typesCreneau = {
   [TypeCreneau.JEU_LIBRE]: {
     libelle: "Jeu libre",
   },
-} as const;
+} satisfies Record<
+  TypeCreneau,
+  {
+    libelle: string;
+  }
+>;

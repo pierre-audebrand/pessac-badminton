@@ -10,6 +10,7 @@ import { CreneauRecherche } from "@/services/creneau.service";
 
 import { CreneauActions } from "./actions";
 import { typesCreneau } from "@/lib/types-creneau";
+import { getContrastColor } from "@/lib/colors";
 
 export function getCreneauColumns(
   currentSort?: string,
@@ -98,7 +99,17 @@ export function getCreneauColumns(
         ) : (
           <div className="flex flex-wrap gap-1">
             {row.original.groupes.map(({ groupe }) => (
-              <Badge key={groupe.id} variant="outline">
+              <Badge
+                key={groupe.id}
+                variant="outline"
+                style={{
+                  backgroundColor: groupe.couleur ?? undefined,
+                  borderColor: groupe.couleur ?? undefined,
+                  color: groupe.couleur
+                    ? getContrastColor(groupe.couleur)
+                    : undefined,
+                }}
+              >
                 {groupe.nom}
               </Badge>
             ))}

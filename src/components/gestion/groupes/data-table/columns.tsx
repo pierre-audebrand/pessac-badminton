@@ -26,6 +26,19 @@ export function getGroupeColumns(
           currentOrder={currentOrder}
         />
       ),
+
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <span
+            className="size-2.5 shrink-0 rounded-full ring-1 ring-black/10"
+            style={{
+              backgroundColor: row.original.couleur ?? "transparent",
+            }}
+          />
+
+          {row.original.nom}
+        </div>
+      ),
     },
 
     {

@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
+import { menus } from "@/lib/menus";
 import { Menu } from "@prisma/client";
-import { recupererMenuData } from "@/lib/menus";
 
 export function MenuBadge({ menu }: { menu: Menu }) {
-  const menuData = recupererMenuData(menu);
+  const menuData = menus[menu];
 
-  return <Badge variant={menuData.variant}>{menuData.label}</Badge>;
+  return <Badge variant={menuData.variant}>{menuData.libelle}</Badge>;
 }

@@ -1,43 +1,43 @@
 import { JourSemaine } from "@prisma/client";
 
 export const joursSemaine = {
-  LUNDI: {
+  [JourSemaine.LUNDI]: {
     numeroJs: 1,
     libelle: "Lundi",
     libelleCourt: "Lun.",
   },
 
-  MARDI: {
+  [JourSemaine.MARDI]: {
     numeroJs: 2,
     libelle: "Mardi",
     libelleCourt: "Mar.",
   },
 
-  MERCREDI: {
+  [JourSemaine.MERCREDI]: {
     numeroJs: 3,
     libelle: "Mercredi",
     libelleCourt: "Mer.",
   },
 
-  JEUDI: {
+  [JourSemaine.JEUDI]: {
     numeroJs: 4,
     libelle: "Jeudi",
     libelleCourt: "Jeu.",
   },
 
-  VENDREDI: {
+  [JourSemaine.VENDREDI]: {
     numeroJs: 5,
     libelle: "Vendredi",
     libelleCourt: "Ven.",
   },
 
-  SAMEDI: {
+  [JourSemaine.SAMEDI]: {
     numeroJs: 6,
     libelle: "Samedi",
     libelleCourt: "Sam.",
   },
 
-  DIMANCHE: {
+  [JourSemaine.DIMANCHE]: {
     numeroJs: 0,
     libelle: "Dimanche",
     libelleCourt: "Dim.",

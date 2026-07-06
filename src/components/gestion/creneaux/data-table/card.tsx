@@ -7,6 +7,7 @@ import { CreneauRecherche } from "@/services/creneau.service";
 
 import { CreneauActions } from "./actions";
 import { typesCreneau } from "@/lib/types-creneau";
+import { getContrastColor } from "@/lib/colors";
 
 interface Props {
   creneau: CreneauRecherche;
@@ -36,7 +37,17 @@ export function CreneauCard({ creneau }: Props) {
           ) : (
             <div className="flex flex-wrap gap-1">
               {creneau.groupes.map(({ groupe }) => (
-                <Badge key={groupe.id} variant="outline">
+                <Badge
+                  key={groupe.id}
+                  variant="outline"
+                  style={{
+                    backgroundColor: groupe.couleur ?? undefined,
+                    borderColor: groupe.couleur ?? undefined,
+                    color: groupe.couleur
+                      ? getContrastColor(groupe.couleur)
+                      : undefined,
+                  }}
+                >
                   {groupe.nom}
                 </Badge>
               ))}

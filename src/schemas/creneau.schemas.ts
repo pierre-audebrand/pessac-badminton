@@ -4,7 +4,7 @@ import { nullableEnumSchema } from "./common.schemas";
 
 export const creerCreneauSchema = z
   .object({
-    salleId: z.string().cuid("Salle invalide"),
+    salleId: z.string(),
 
     jourSemaine: z.enum(JourSemaine),
 

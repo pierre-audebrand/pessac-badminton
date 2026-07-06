@@ -7,10 +7,12 @@ import type { CreneauFormState } from "@/actions/creneau.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { SelectSalle } from "@/components/ui/selects/select-salle";
-import { SelectJourSemaine } from "@/components/ui/selects/select-jour-semaine";
-import { SelectTypeCreneau } from "@/components/ui/selects/select-type-creneau";
-import { TypeCreneau } from "@prisma/client";
+import { JourSemaine, TypeCreneau } from "@prisma/client";
+import { SelectEnum } from "@/components/ui/selects/select-enum";
+import { joursSemaine } from "@/lib/jours-semaine";
+import { typesCreneau } from "@/lib/types-creneau";
+import { SelectOptions } from "@/components/ui/selects/select-options";
+import { useSelectState } from "@/lib/use-select-state";
 
 type Props = {
   action: (
@@ -25,14 +27,7 @@ type Props = {
 
   creneau?: {
     salleId: string;
-    jourSemaine:
-      | "LUNDI"
-      | "MARDI"
-      | "MERCREDI"
-      | "JEUDI"
-      | "VENDREDI"
-      | "SAMEDI"
-      | "DIMANCHE";
+    jourSemaine: JourSemaine;
     type?: TypeCreneau | null;
     heureDebut: string;
     heureFin: string;
@@ -55,6 +50,12 @@ export function FormulaireCreneau({
 }: Props) {
   const [state, formAction] = useActionState(action, initialState);
 
+  const [jourSemaine, setJourSemaine] = useSelectState(creneau?.jourSemaine);
+
+  const [typeCreneau, setTypeCreneau] = useSelectState(creneau?.type);
+
+  const [salleId, setSalleId] = useSelectState(creneau?.salleId);
+
   return (
     <form action={formAction} className="max-w-xl space-y-6" noValidate>
       <div className="space-y-2">
@@ -62,7 +63,17 @@ export function FormulaireCreneau({
           Salle
         </Label>
 
-        <SelectSalle salles={salles} defaultValue={creneau?.salleId} required />
+        <input type="hidden" name="salleId" value={salleId ?? ""} />
+
+        <SelectOptions
+          value={salleId}
+          onValueChange={setSalleId}
+          items={salles.map((salle) => ({
+            value: salle.id,
+            label: salle.nom,
+          }))}
+          placeholder="Sélectionner une salle"
+        />
 
         {state.erreurs?.salleId?.map((erreur) => (
           <p key={erreur} className="text-sm text-destructive">
@@ -76,7 +87,14 @@ export function FormulaireCreneau({
           Jour
         </Label>
 
-        <SelectJourSemaine defaultValue={creneau?.jourSemaine} required />
+        <input type="hidden" name="jourSemaine" value={jourSemaine ?? ""} />
+
+        <SelectEnum
+          items={joursSemaine}
+          value={jourSemaine}
+          onValueChange={(value) => setJourSemaine(value)}
+          placeholder="Sélectionner un jour"
+        />
 
         {state.erreurs?.jourSemaine?.map((erreur) => (
           <p key={erreur} className="text-sm text-destructive">
@@ -90,7 +108,14 @@ export function FormulaireCreneau({
           Type de créneau
         </Label>
 
-        <SelectTypeCreneau defaultValue={creneau?.type} />
+        <input type="hidden" name="type" value={typeCreneau ?? ""} />
+
+        <SelectEnum
+          items={typesCreneau}
+          value={typeCreneau}
+          onValueChange={(value) => setTypeCreneau(value)}
+          placeholder="Sélectionner un type"
+        />
 
         {state.erreurs?.type?.map((erreur) => (
           <p key={erreur} className="text-sm text-destructive">

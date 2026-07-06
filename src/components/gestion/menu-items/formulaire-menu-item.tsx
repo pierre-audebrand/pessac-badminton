@@ -9,18 +9,14 @@ import type { MenuItemFormState } from "@/actions/menu-item.actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { libelleMenu } from "../../../lib/menus";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { menus } from "../../../lib/menus";
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 import { Folder, FileText, Globe } from "lucide-react";
+import { SelectOptions } from "@/components/ui/selects/select-options";
+import { useSelectState } from "@/lib/use-select-state";
+import { SelectEnum } from "@/components/ui/selects/select-enum";
 
 type TypeMenuItem = "NONE" | "PAGE" | "URL";
 
@@ -83,19 +79,27 @@ export function FormulaireMenuItem({
     return "NONE";
   });
 
-  const [menu, setMenu] = useState(
+  const [menu, setMenu] = useState<Menu>(
     menuItem?.menu ?? menuParDefaut ?? Menu.EN_TETE,
   );
 
-  const [parentId, setParentId] = useState<string | null>(
-    menuItem?.parentId ?? null,
-  );
+  const [parentId, setParentId] = useSelectState(menuItem?.parentId);
 
-  const [pageId, setPageId] = useState<string | null>(menuItem?.pageId ?? null);
+  const [pageId, setPageId] = useSelectState(menuItem?.pageId);
 
   const [url, setUrl] = useState(menuItem?.url ?? "");
 
   const parents = parentsParMenu[menu];
+
+  const parentItems = parents.map((parent) => ({
+    value: parent.id,
+    label: parent.libelle,
+  }));
+
+  const pageItems = pages.map((page) => ({
+    value: page.id,
+    label: page.titre,
+  }));
 
   return (
     <form action={formAction} className="max-w-2xl space-y-6" noValidate>
@@ -108,27 +112,15 @@ export function FormulaireMenuItem({
 
             <input type="hidden" name="menu" value={menu} />
 
-            <Select
+            <SelectEnum
+              items={menus}
               value={menu}
               onValueChange={(value) => {
-                setMenu(value as Menu);
-                setParentId(null);
+                setMenu(value);
+                setParentId(undefined);
               }}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value={Menu.EN_TETE}>
-                  {libelleMenu(Menu.EN_TETE)}
-                </SelectItem>
-
-                <SelectItem value={Menu.PIED_DE_PAGE}>
-                  {libelleMenu(Menu.PIED_DE_PAGE)}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              placeholder="Sélectionner un menu"
+            />
 
             {state.erreurs?.menu?.map((erreur) => (
               <p key={erreur} className="text-sm text-destructive">
@@ -144,7 +136,7 @@ export function FormulaireMenuItem({
               <Label>Menu</Label>
 
               <p className="text-sm text-muted-foreground">
-                {libelleMenu(menu)}
+                {menus[menu].libelle}
               </p>
             </div>
           </>
@@ -156,26 +148,12 @@ export function FormulaireMenuItem({
 
         <input type="hidden" name="parentId" value={parentId ?? ""} />
 
-        <Select
-          value={parentId ?? "_none"}
-          onValueChange={(value) =>
-            setParentId(value === "_none" ? null : value)
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Aucun parent" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="_none">Aucun</SelectItem>
-
-            {parents.map((parent) => (
-              <SelectItem key={parent.id} value={parent.id}>
-                {parent.libelle}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <SelectOptions
+          value={parentId}
+          onValueChange={(value) => setParentId(value)}
+          emptyLabel="Aucun parent"
+          items={parentItems}
+        />
 
         {state.erreurs?.parentId?.map((erreur) => (
           <p key={erreur} className="text-sm text-destructive">
@@ -223,19 +201,21 @@ export function FormulaireMenuItem({
 
             switch (type) {
               case "NONE":
-                setPageId(null);
+                setPageId(undefined);
                 setUrl("");
                 break;
 
               case "PAGE":
                 setUrl("");
-                if (!pageId && pages.length === 1) {
-                  setPageId(pages[0].id);
+
+                if (pages.length === 1) {
+                  setPageId((current) => current ?? pages[0].id);
                 }
+
                 break;
 
               case "URL":
-                setPageId(null);
+                setPageId(undefined);
                 break;
             }
           }}
@@ -265,26 +245,12 @@ export function FormulaireMenuItem({
 
           <input type="hidden" name="pageId" value={pageId ?? ""} />
 
-          <Select
-            value={pageId ?? "_none"}
-            onValueChange={(value) =>
-              setPageId(value === "_none" ? null : value)
-            }
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Sélectionner une page" />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="_none">Sélectionner une page</SelectItem>
-
-              {pages.map((page) => (
-                <SelectItem key={page.id} value={page.id}>
-                  {page.titre}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SelectOptions
+            value={pageId}
+            onValueChange={setPageId}
+            emptyLabel="Sélectionner une page"
+            items={pageItems}
+          />
 
           {state.erreurs?.pageId?.map((erreur) => (
             <p key={erreur} className="text-sm text-destructive">
